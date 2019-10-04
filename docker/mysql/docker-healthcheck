@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+set -eo pipefail
+
+echo 'SELECT 1' | mysql --protocol TCP -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" 2>&1 > /dev/null
+
+exit $?

@@ -1,0 +1,62 @@
+version: '3.7'
+volumes:
+  assets_build:
+
+services:
+  php:
+    container_name: sf4_php
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    volumes:
+      - "./app:/var/www/app:cached"
+      - "assets_build:/var/www/app/public/build"
+    environment:
+      - DATABASE_URL=mysql://demo:demo@sf4_mysql:3306/demo
+
+  nginx:
+    container_name: sf4_nginx
+    build:
+      context: .
+      dockerfile: docker/nginx/Dockerfile
+    restart: always
+    ports:
+      - 8080:80
+    volumes:
+      - "./app:/var/www/app:cached"
+      - "assets_build:/var/www/app/public/build"
+      - "./docker/nginx/vhost.conf:/etc/nginx/conf.d/default.conf"
+
+  mysql:
+    container_name: sf4_mysql
+    build:
+      context: .
+      dockerfile: docker/mysql/Dockerfile
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=demo
+      - MYSQL_USER=demo
+      - MYSQL_PASSWORD=demo
+    ports:
+      - 3306:3306
+
+  adminer:
+    container_name: sf4_adminer
+    image: adminer
+    restart: always
+    environment:
+      - ADMINER_DESIGN=hever
+    ports:
+      - 9000:8080
+
+  assets:
+    container_name: sf4_assets
+    build:
+      context: .
+      dockerfile: docker/assets/Dockerfile
+    volumes:
+      - "./app/assets:/home/node/app/assets"
+      - "./app/webpack.config.js:/home/node/app/webpack.config.js"
+      - "assets_build:/home/node/app/public/build"
+    command: ["yarn", "encore", "dev", "--watch"]

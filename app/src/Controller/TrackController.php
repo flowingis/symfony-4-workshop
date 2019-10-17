@@ -3,7 +3,9 @@
 namespace App\Controller;
 
 use App\DTO\TrackDto;
+use App\Entity\TimeSpent;
 use App\Form\TrackType;
+use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -23,12 +25,19 @@ class TrackController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
 
+            $ts = TimeSpent::create(
+                Uuid::uuid4(),
+                $this->getUser()->getId(),
+                $trackDto->progetto,
+                $trackDto->data,
+                $trackDto->ore
+            );
+
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($ts);
+            $entityManager->flush();
+
             $this->addFlash('notice', 'ore inserite');
-
-
-            // $entityManager = $this->getDoctrine()->getManager();
-            // $entityManager->persist($task);
-            // $entityManager->flush();
         }
 
         return $this->render('track/index.html.twig', [

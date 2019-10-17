@@ -22,6 +22,7 @@ class TrackTimeForDeveloperTest extends WebTestCase
         $crawler = $client->request('GET', '/track');
 
         $form = $crawler->selectButton('Save')->form();
+
         $form->setValues(['track' => [
             'progetto' => 'progetto 1',
             'data' => '2019-10-10',

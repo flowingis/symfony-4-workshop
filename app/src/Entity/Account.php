@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -54,7 +55,7 @@ class Account implements UserInterface
 
     public function getId(): ?UuidInterface
     {
-        return $this->id;
+        return Uuid::fromString($this->id);
     }
 
     /**

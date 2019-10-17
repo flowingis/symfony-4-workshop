@@ -3,7 +3,6 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -41,10 +40,7 @@ class Account implements UserInterface
     public static function create(UuidInterface $uuid, string $email, string $password, UserPasswordEncoderInterface $encoder): Account
     {
         $a = new self($uuid, $email);
-
-        $encodedPwd = $encoder->encodePassword($a, $password);
-
-        $a->setPassword($encodedPwd);
+        $a->password = $encoder->encodePassword($a, $password);
 
         return $a;
     }

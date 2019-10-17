@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Account;
 use App\Entity\TimeSpent;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
@@ -17,6 +18,26 @@ class TimeSpentRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, TimeSpent::class);
+    }
+
+    public function countHours(Account $user, \DateTime $day): int
+    {
+        $tot = $this->createQueryBuilder('t')
+            ->select('SUM(t.ore)')
+            ->where('t.data = :data')
+            ->andWhere('t.utente = :utente')
+            ->setParameter('data', $day)
+            ->setParameter('utente', $user->getId())
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        return $tot ?? 0;
+    }
+
+    public function save(TimeSpent $timeSpent): void
+    {
+        $this->_em->persist($timeSpent);
+        $this->_em->flush();
     }
 
     // /**

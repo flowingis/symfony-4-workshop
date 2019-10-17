@@ -25,6 +25,6 @@ class LoginTest extends WebTestCase
         $client->followRedirect();
 
         $this->assertResponseIsSuccessful();
-        $this->assertSelectorTextContains('h1', 'Hello HomeController!');
+        $this->assertSelectorTextContains('h1', 'michele.orselli@gmail.com');
     }
 }

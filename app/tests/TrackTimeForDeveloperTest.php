@@ -38,14 +38,14 @@ class TrackTimeForDeveloperTest extends WebTestCase
 
         $form->setValues(['track' => [
             'progetto' => 'progetto 3',
-            'data' => '2019-10-01',
+            'data' => '2019-10-10',
             'ore' => 5
         ]
         ]);
 
         $crawler = $client->submit($form);
 
-        $this->assertContains('ore inserite', $crawler->filter('.message')->text());
+        $this->assertContains('Non puoi lavorare 10 ore nel giorno 2019-10-10', $crawler->filter('.message')->text());
     }
 
     private function login(KernelBrowser $client): void

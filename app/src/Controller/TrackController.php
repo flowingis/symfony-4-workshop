@@ -3,20 +3,19 @@
 namespace App\Controller;
 
 use App\DTO\TrackDto;
-use App\Entity\TimeSpent;
 use App\Form\TrackType;
-use Ramsey\Uuid\Uuid;
+use App\Repository\TimeSpentRepository;
+use App\UseCase\InsertSpentHour;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class TrackController extends AbstractController
 {
     /**
      * @Route("/track", name="track")
      */
-    public function index(Request $request)
+    public function index(Request $request, TimeSpentRepository $timeRepo)
     {
         $trackDto = new TrackDto();
 
@@ -26,21 +25,15 @@ class TrackController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-            $ts = TimeSpent::create(
-                Uuid::uuid4(),
-                $this->getUser()->getId(),
-                $trackDto->getProgetto(),
-                $trackDto->getData(),
-                $trackDto->getOre()
-            );
+            try {
+                $useCase = new InsertSpentHour($timeRepo);
+                $useCase->execute($this->getUser(), $trackDto);
 
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->persist($ts);
-            $entityManager->flush();
-
-            $this->addFlash('notice', 'ore inserite');
+                $this->addFlash('notice', 'ore inserite');
+            } catch (\Throwable $e) {
+                $this->addFlash('error', $e->getMessage());
+            }
         }
-
 
         return $this->render('track/index.html.twig', [
             'form' => $form->createView(),

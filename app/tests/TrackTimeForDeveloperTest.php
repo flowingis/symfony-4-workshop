@@ -24,10 +24,23 @@ class TrackTimeForDeveloperTest extends WebTestCase
         $form = $crawler->selectButton('Save')->form();
 
         $form->setValues(['track' => [
-            'progetto' => 'progetto 1',
-            'data' => '2019-10-10',
-            'ore' => '4'
+            'progetto' => 'progetto 3',
+            'data' => '2019-11-01',
+            'ore' => 9
             ]
+        ]);
+
+        $crawler = $client->submit($form);
+
+        $this->assertContains('This value should be less than or equal to', $crawler->filter('.form-error-message')->eq(0)->text());
+        $this->assertContains('This value should be less than or equal to 8', $crawler->filter('.form-error-message')->eq(1)->text());
+
+
+        $form->setValues(['track' => [
+            'progetto' => 'progetto 3',
+            'data' => '2019-10-01',
+            'ore' => 5
+        ]
         ]);
 
         $crawler = $client->submit($form);

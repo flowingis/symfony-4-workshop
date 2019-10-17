@@ -9,6 +9,7 @@ use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class TrackController extends AbstractController
 {
@@ -28,9 +29,9 @@ class TrackController extends AbstractController
             $ts = TimeSpent::create(
                 Uuid::uuid4(),
                 $this->getUser()->getId(),
-                $trackDto->progetto,
-                $trackDto->data,
-                $trackDto->ore
+                $trackDto->getProgetto(),
+                $trackDto->getData(),
+                $trackDto->getOre()
             );
 
             $entityManager = $this->getDoctrine()->getManager();
@@ -39,6 +40,7 @@ class TrackController extends AbstractController
 
             $this->addFlash('notice', 'ore inserite');
         }
+
 
         return $this->render('track/index.html.twig', [
             'form' => $form->createView(),
